@@ -21,16 +21,23 @@
             <li class="nav-item" data-src="zagonkaNewSerials">Zagonka New Serials</li>
             <li class="nav-item" data-src="zagonkaNewSeasons">Zagonka New Seasons</li>
           </ul>
+          <p class="favorites-title">Favorites <span class="favorites-counter"></span></p>
+          <ul class="favorites-list">
+
+          </ul>
         </div>
+
         <div class="select-content">
 
         </div>
       </section>
       <section class="view">
         <div class="view-content">
-          
         </div>
-        <button type="button" class="view-close">X</button>
+        <div class="view-controls">
+          <button type="button" class="view-close">X</button>
+          <button type="button" class="view-favorite"></button>
+        </div>
       </section>
     </div>
   </div>
@@ -40,10 +47,14 @@
     </div>
     <div class="content">
       <a href="">
-        <img src="" alt="Poster" class="content-img">
+        <img src="" alt="Poster" class="content-img" referrerpolicy="no-referrer">
         <p class="content-title"></p>
       </a>
     </div>
+    <li class="favorites-item">
+      <a href="" class="favorites-descr">1</a>
+      <button type="button" class="favorites-delete"></button>
+    </li>
   </div>
   <script src="./js/script.js"></script>
 </body>
