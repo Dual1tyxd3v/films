@@ -5,21 +5,25 @@ const urls = {
   zagonkaNewSerials: ['http://zagonko12.zagonko.com/9', renderZagon, 4],
   zagonkaNewSeasons: ['http://zagonko12.zagonko.com/9', renderZagon, 5],
 };
+
 const selectContent = document.querySelector('.select-content');
 const select = document.querySelector('.select');
 const background = document.querySelector('.background').cloneNode(true);
 const contentItem = document.querySelector('.hide').querySelector('.content');
 const wrapper = document.querySelector('.wrapper');
 const player = document.querySelector('.view-content');
-const favoriteTab = document.querySelector('.hide').querySelector('.favotites-item');
+const favoriteTab = document.querySelector('.hide').querySelector('.favorites-item');
 const favoriteList = document.querySelector('.favorites-list');
 const favoriteCounter = document.querySelector('.favorites-counter');
 const addFavoriteBtn = document.querySelector('.view-favorite');
+const favoriteTitle = document.querySelector('.favorites-title');
+const modalForm = document.querySelector('.modal-form');
 let activeFilm = {};
 
 function checkFavorites() {
   const favorites = JSON.parse(localStorage.getItem('favorites'));
-  if (!favorites) {
+  favoriteList.innerHTML = '';
+  if (!favorites || Object.keys(favorites).length === 0) {
     favoriteCounter.innerHTML = '(0)';
     return;
   }
@@ -27,9 +31,15 @@ function checkFavorites() {
   for (let k in favorites) {
     const newTab = favoriteTab.cloneNode(true);
     newTab.querySelector('.favorites-descr').innerHTML = k;
-    newTab.querySelector('.favorites-descr').href = favorites[k];
+    newTab.querySelector('.favorites-descr').href = favorites[k][0];
+    newTab.querySelector('.favorites-descr').dataset.play = favorites[k][1];
+    newTab.querySelector('.favorites-delete').addEventListener('click', (e) => {
+      editFavoritesStorage(false, k);
+    });
+    newTab.querySelector('.favorites-descr').addEventListener('click',(e) => loadFilm(e, true));
     favoriteList.append(newTab);
   }
+  favoriteCounter.innerHTML = `(${Object.keys(favorites).length})`;
 }
 checkFavorites();
 
@@ -53,9 +63,9 @@ async function loadContent([url, render, index = null]) {
     })
     .then(res => render(res, index))
     .catch(e => alert(e.message));
-  
-    selectContent.querySelector('.background').remove();
-} 
+
+  selectContent.querySelector('.background').remove();
+}
 
 function renderLord(res) {
   const prefix = 'https://lord4.lordfilm.lu';
@@ -67,10 +77,11 @@ function renderLord(res) {
     content.querySelector('a').dataset.play = 'lord';
     content.querySelector('img').src = prefix + item.querySelector('img').dataset.src;
     content.querySelector('p').innerHTML = item.querySelector('.th-title').innerHTML;
-    content.addEventListener('click', loadFilm)
+    content.querySelector('a').addEventListener('click', loadFilm)
     selectContent.append(content);
   });
 }
+
 function renderZagon(res, index) {
   const prefix = 'http://zagonko12.zagonko.com';
   const div = document.createElement('div');
@@ -82,15 +93,30 @@ function renderZagon(res, index) {
     content.querySelector('a').dataset.play = 'zagonka';
     content.querySelector('img').src = prefix + film.querySelector('img').dataset.srcset.split(' ')[0];
     content.querySelector('p').innerHTML = film.querySelector('a').innerHTML;
-    content.addEventListener('click', loadFilm)
+    content.querySelector('a').addEventListener('click', loadFilm);
     selectContent.append(content);
   });
 }
-async function loadFilm (e) {
+async function loadFilm(e, tab = false) {
   e.preventDefault();
-  const currentLink = e.currentTarget.querySelector('a');
-  activeFilm.name = currentLink.innerHTML;
+  let currentLink = null;
+  if (!tab) {
+    console.log(e.currentTarget)
+    currentLink = e.currentTarget;
+    activeFilm.name = currentLink.querySelector('.content-title').innerHTML;
+  } else {
+    currentLink = e.currentTarget;
+    activeFilm.name = currentLink.innerHTML;
+  }
+  
   activeFilm.href = currentLink.href;
+  activeFilm.play = currentLink.dataset.play;
+
+  if (localStorage.getItem('favorites') && localStorage.getItem('favorites').includes(activeFilm.name)) {
+    addFavoriteBtn.classList.add('active');
+  } else {
+    addFavoriteBtn.classList.remove('active');
+  }
 
   const html = await fetch(currentLink.href)
     .then(res => res.text())
@@ -103,9 +129,9 @@ async function loadFilm (e) {
       div.querySelector('#ipl').src = 'http://zagonko12.zagonko.com' + div.querySelector('#ipl').dataset.src;
       player.append(div.querySelector('#ipl'));
     }
-    break;
-    case "lord": {player.append(div.querySelectorAll('iframe')[1])}
-    break;
+      break;
+    case "lord": { player.append(div.querySelectorAll('iframe')[1]) }
+      break;
   }
 
   wrapper.style.transform = `translateX(-${select.clientWidth + 5}px)`;
@@ -115,10 +141,47 @@ document.querySelector('.view-close').addEventListener('click', () => {
   wrapper.style.transform = `translateX(0px)`;
   player.innerHTML = '';
 });
+
 addFavoriteBtn.addEventListener('click', (e) => {
-  if (localStorage.getItem('favorites').includes(activeFilm.name)) {
+  console.log(activeFilm)
+  if (localStorage.getItem('favorites') && localStorage.getItem('favorites').includes(activeFilm.name)) {
     addFavoriteBtn.classList.remove('active');
+    editFavoritesStorage(false);
   } else {
     addFavoriteBtn.classList.add('active');
+    editFavoritesStorage(true);
   }
+});
+
+function editFavoritesStorage(add, film = null) {
+  const temp = JSON.parse(localStorage.getItem('favorites'));
+  add
+    ? temp[activeFilm.name] = [activeFilm.href, activeFilm.play]
+    : delete temp[film || activeFilm.name];
+  localStorage.setItem('favorites', JSON.stringify(temp));
+  checkFavorites();
+}
+
+favoriteTitle.addEventListener('click', () => {
+  favoriteList.classList.toggle('hideTab');
+});
+
+function toggleModal() {
+  document.querySelector('.modal-bg').classList.toggle('hide');
+}
+
+document.querySelector('.favorites-addBtn').addEventListener('click', toggleModal);
+document.querySelector('.modal-close').addEventListener('click', toggleModal);
+
+modalForm.addEventListener('submit', (e) => {
+  e.preventDefault();
+
+  activeFilm.name = modalForm.querySelector('#film-name').value;
+  activeFilm.href = modalForm.querySelector('#film-url').value;
+
+  activeFilm.href.includes('zagon')
+    ? activeFilm.play = 'zagonka'
+    : activeFilm.play = 'lord';
+  editFavoritesStorage(true);
+  toggleModal();
 });

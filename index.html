@@ -22,9 +22,10 @@
             <li class="nav-item" data-src="zagonkaNewSeasons">Zagonka New Seasons</li>
           </ul>
           <p class="favorites-title">Favorites <span class="favorites-counter"></span></p>
-          <ul class="favorites-list">
+          <ul class="favorites-list hideTab">
 
           </ul>
+          <button type="button" class="favorites-addBtn">+ Add</button>
         </div>
 
         <div class="select-content">
@@ -41,6 +42,7 @@
       </section>
     </div>
   </div>
+
   <div class="hide">
     <div class="background">
       <div class="spinner"></div>
@@ -55,6 +57,25 @@
       <a href="" class="favorites-descr">1</a>
       <button type="button" class="favorites-delete"></button>
     </li>
+  </div>
+  <div class="modal-bg hide">
+    <div class="modal">
+      <form action="" class="modal-form">
+        <div class="modal-row">
+          <label for="film-name">Name</label>
+          <input type="text" id="film-name" class="modal-input">
+        </div>
+        <div class="modal-row">
+          <label for="film-url">Url</label>
+          <input type="text" id="film-url" class="modal-input">
+        </div>
+        <div class="modal-row">
+          <button type="submit" class="modal-add modal-btn">Add</button>
+          <button type="button" class="modal-btn modal-close">Close</button>
+        </div>
+      </form>
+    </div>
+
   </div>
   <script src="./js/script.js"></script>
 </body>
