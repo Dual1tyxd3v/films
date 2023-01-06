@@ -102,7 +102,6 @@ async function loadFilm(e, tab = false) {
   e.preventDefault();
   let currentLink = null;
   if (!tab) {
-    console.log(e.currentTarget)
     currentLink = e.currentTarget;
     activeFilm.name = currentLink.querySelector('.content-title').innerHTML;
   } else {
@@ -146,7 +145,6 @@ document.querySelector('.view-close').addEventListener('click', () => {
 });
 
 addFavoriteBtn.addEventListener('click', (e) => {
-  console.log(activeFilm)
   if (localStorage.getItem('favorites') && localStorage.getItem('favorites').includes(activeFilm.name)) {
     addFavoriteBtn.classList.remove('active');
     editFavoritesStorage(false);
@@ -195,8 +193,6 @@ window.addEventListener('resize', () => {
   }
   wrapper.style.transition = 'none';
   wrapper.style.transform = `translateX(-${wrapper.clientWidth / 2 + 5}px)`;
-  console.log('wrap' + wrapper.clientWidth);
-  console.log('doc' + document.documentElement.clientWidth)
   wrapper.style.transitionDuration = '0.5s';
   wrapper.style.transitionProperty = 'all';
 });
