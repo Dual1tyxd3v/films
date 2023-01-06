@@ -19,6 +19,7 @@ const addFavoriteBtn = document.querySelector('.view-favorite');
 const favoriteTitle = document.querySelector('.favorites-title');
 const modalForm = document.querySelector('.modal-form');
 let activeFilm = {};
+let filmWindow = 0;
 
 function checkFavorites() {
   const favorites = JSON.parse(localStorage.getItem('favorites'));
@@ -133,13 +134,15 @@ async function loadFilm(e, tab = false) {
     case "lord": { player.append(div.querySelectorAll('iframe')[1]) }
       break;
   }
-
-  wrapper.style.transform = `translateX(-${select.clientWidth + 5}px)`;
+  
+  wrapper.style.transform = `translateX(-${wrapper.clientWidth / 2 + 5}px)`;
+  filmWindow = 1;
 }
 
 document.querySelector('.view-close').addEventListener('click', () => {
   wrapper.style.transform = `translateX(0px)`;
   player.innerHTML = '';
+  filmWindow = 0;
 });
 
 addFavoriteBtn.addEventListener('click', (e) => {
@@ -184,4 +187,16 @@ modalForm.addEventListener('submit', (e) => {
     : activeFilm.play = 'lord';
   editFavoritesStorage(true);
   toggleModal();
+});
+
+window.addEventListener('resize', () => {
+  if (!filmWindow) {
+    return;
+  }
+  wrapper.style.transition = 'none';
+  wrapper.style.transform = `translateX(-${wrapper.clientWidth / 2 + 5}px)`;
+  console.log('wrap' + wrapper.clientWidth);
+  console.log('doc' + document.documentElement.clientWidth)
+  wrapper.style.transitionDuration = '0.5s';
+  wrapper.style.transitionProperty = 'all';
 });

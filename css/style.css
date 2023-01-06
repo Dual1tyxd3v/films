@@ -22,7 +22,7 @@ body {
   overflow: hidden;
 }
 .wrapper {
-  width: 192vw;
+  width: 200%;
   display: flex;
   height: 92vh;
   transition: all 0.5s;
