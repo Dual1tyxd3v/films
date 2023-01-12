@@ -1,6 +1,6 @@
 const urls = {
-  lordSerials: ['https://lord4.lordfilm.lu/serialy/', renderLord],
-  lordFilms: ['https://lord4.lordfilm.lu/filmy/', renderLord],
+  lordSerials: ['https://n.lordfilm.film/serialys/', renderLord],
+  lordFilms: ['https://n.lordfilm.film/films/', renderLord],
   zagonkaFilms: ['http://zagonko12.zagonko.com/9', renderZagon, 1],
   zagonkaNewSerials: ['http://zagonko12.zagonko.com/9', renderZagon, 4],
   zagonkaNewSeasons: ['http://zagonko12.zagonko.com/9', renderZagon, 5],
@@ -37,7 +37,7 @@ function checkFavorites() {
     newTab.querySelector('.favorites-delete').addEventListener('click', (e) => {
       editFavoritesStorage(false, k);
     });
-    newTab.querySelector('.favorites-descr').addEventListener('click',(e) => loadFilm(e, true));
+    newTab.querySelector('.favorites-descr').addEventListener('click', (e) => loadFilm(e, true));
     favoriteList.append(newTab);
   }
   favoriteCounter.innerHTML = `(${Object.keys(favorites).length})`;
@@ -69,14 +69,15 @@ async function loadContent([url, render, index = null]) {
 }
 
 function renderLord(res) {
-  const prefix = 'https://lord4.lordfilm.lu';
+  const prefix = 'https://n.lordfilm.film';
   const div = document.createElement('div');
   div.innerHTML = res.split('<body')[1];
   div.querySelectorAll('.th-item').forEach((item) => {
     const content = contentItem.cloneNode(true);
     content.querySelector('a').href = item.querySelector('a').href;
     content.querySelector('a').dataset.play = 'lord';
-    content.querySelector('img').src = prefix + item.querySelector('img').dataset.src;
+    // content.querySelector('img').src = prefix + item.querySelector('img').dataset.src;
+    content.querySelector('img').src = item.querySelector('img').dataset.src
     content.querySelector('p').innerHTML = item.querySelector('.th-title').innerHTML;
     content.querySelector('a').addEventListener('click', loadFilm)
     selectContent.append(content);
@@ -108,7 +109,7 @@ async function loadFilm(e, tab = false) {
     currentLink = e.currentTarget;
     activeFilm.name = currentLink.innerHTML;
   }
-  
+
   activeFilm.href = currentLink.href;
   activeFilm.play = currentLink.dataset.play;
 
@@ -117,7 +118,6 @@ async function loadFilm(e, tab = false) {
   } else {
     addFavoriteBtn.classList.remove('active');
   }
-
   const html = await fetch(currentLink.href)
     .then(res => res.text())
     .catch(e => alert(e.message));
@@ -130,10 +130,17 @@ async function loadFilm(e, tab = false) {
       player.append(div.querySelector('#ipl'));
     }
       break;
-    case "lord": { player.append(div.querySelectorAll('iframe')[1]) }
+    case "lord": {
+      // player.append(div.querySelectorAll('iframe')[0]);
+      const src = div.querySelectorAll('iframe')[0].dataset.src;
+      const ifr = document.createElement('iframe');
+      ifr.allowFullscreen = true;
+      ifr.src = src;
+      player.append(ifr);
+    }
       break;
   }
-  
+
   wrapper.style.transform = `translateX(-${wrapper.clientWidth / 2 + 5}px)`;
   filmWindow = 1;
 }
