@@ -10,6 +10,7 @@ a {
   text-decoration: none;
 }
 iframe {
+  border: none;
   width: 90%;
   height: 90%;
 }
@@ -49,7 +50,7 @@ body {
 .favorites-title,
 .favorites-item,
 .favorites-addBtn {
-  height: 30px;
+  min-height: 30px;
   cursor: pointer;
   min-width: 18vw;
   background-color: #bc8080;

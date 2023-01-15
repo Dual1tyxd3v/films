@@ -132,7 +132,7 @@ async function loadFilm(e, tab = false) {
       break;
     case "lord": {
       // player.append(div.querySelectorAll('iframe')[0]);
-      const src = div.querySelectorAll('iframe')[0].dataset.src;
+      const src = div.querySelectorAll('iframe')[1].dataset.src;
       const ifr = document.createElement('iframe');
       ifr.allowFullscreen = true;
       ifr.src = src;
